@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "javd",
+  "version": "${version}",
+  "name": "Just Another Void Dimension",
+  "description": "Void Worlds",
+  "authors": [
+    "UnRealDinnerbone"
+  ],
+  "contact": {
+    "sources": "https://github.com/nanite/JAVD"
+  },
+  "license": "All Rights Reserved unless stated otherwise. Distrubtion permssion is given to FeedTheBeast and CurseForge for use in modpacks",
+  "icon": "assets/examplemod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.unrealdinnerbone.javd.JAVD::init"
+    ]
+  },
+  "mixins": [
+
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.19.2",
+    "architectury": ">=6.2.43"
+  }
+}
