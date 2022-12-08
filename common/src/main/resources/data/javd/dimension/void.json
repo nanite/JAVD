@@ -6,8 +6,7 @@
       "biome": "javd:void",
       "lakes": false,
       "features": false,
-      "layers": [],
-      "structure_overrides": []
+      "layers": []
     }
   }
 }

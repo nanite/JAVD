@@ -1,0 +1,4 @@
+// 1.19.3	2022-12-08T16:09:21.0856123	Tags for minecraft:block mod id javd
+c882f1fc924c7ace24f2ece6ec48f727ede793e9 data/javd/tags/blocks/generator.json
+92f78b22136e536dd3ac3d7b92d041a6681c16a0 data/minecraft/tags/blocks/mineable/pickaxe.json
+92f78b22136e536dd3ac3d7b92d041a6681c16a0 data/minecraft/tags/blocks/needs_diamond_tool.json
