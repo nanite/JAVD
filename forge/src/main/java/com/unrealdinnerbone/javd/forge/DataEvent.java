@@ -2,8 +2,11 @@ package com.unrealdinnerbone.javd.forge;
 
 import com.unrealdinnerbone.javd.JAVD;
 import com.unrealdinnerbone.javd.JAVDRegistry;
+import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.Main;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -11,6 +14,8 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.registries.RegistriesDatapackGenerator;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.flag.FeatureFlags;
@@ -31,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 
@@ -40,8 +46,12 @@ public class DataEvent {
         event.getGenerator().addProvider(true, new Recipe(event.getGenerator().getPackOutput()));
         event.getGenerator().addProvider(true, new BlockState(event.getGenerator(), event.getExistingFileHelper()));
         event.getGenerator().addProvider(true, new Item(event.getGenerator(), event.getExistingFileHelper()));
-        event.getGenerator().addProvider(true, new LootTable(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
+        event.getGenerator().addProvider(true, new LootTable(event.getGenerator().getPackOutput()));
         event.getGenerator().addProvider(true, new BlockTag(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
+    }
+
+    private static <T extends DataProvider> DataProvider.Factory<T> bindRegistries(BiFunction<PackOutput, CompletableFuture<HolderLookup.Provider>, T> biFunction, CompletableFuture<HolderLookup.Provider> completableFuture) {
+        return packOutput -> biFunction.apply(packOutput, completableFuture);
     }
 
     public static class BlockTag extends BlockTagsProvider {
@@ -78,7 +88,7 @@ public class DataEvent {
 
     public static class LootTable extends LootTableProvider {
 
-        public LootTable(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper fileHelper) {
+        public LootTable(PackOutput output) {
             super(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(BlockLootTable::new, LootContextParamSets.BLOCK)));
         }
 
@@ -95,6 +105,7 @@ public class DataEvent {
                 dropSelf(JAVDRegistry.PORTAL_BLOCK.get());
             }
 
+            @Override
             protected Iterable<Block> getKnownBlocks() {
                 return Collections.singleton(JAVDRegistry.PORTAL_BLOCK.get());
             }
@@ -109,7 +120,7 @@ public class DataEvent {
     public static class Item extends net.minecraftforge.client.model.generators.ItemModelProvider {
 
         public Item(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-            super(generator, JAVD.MOD_ID, existingFileHelper);
+            super(generator.getPackOutput(), JAVD.MOD_ID, existingFileHelper);
         }
 
         @Override
@@ -122,7 +133,7 @@ public class DataEvent {
     public static class BlockState extends BlockStateProvider {
 
         public BlockState(DataGenerator gen, ExistingFileHelper exFileHelper) {
-            super(gen, JAVD.MOD_ID, exFileHelper);
+            super(gen.getPackOutput(), JAVD.MOD_ID, exFileHelper);
         }
 
         @Override
