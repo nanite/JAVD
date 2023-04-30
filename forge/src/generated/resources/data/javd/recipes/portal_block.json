@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "javd:portal_block"
-  }
+  },
+  "show_notification": true
 }

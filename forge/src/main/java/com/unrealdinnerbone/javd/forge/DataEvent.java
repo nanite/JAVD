@@ -4,6 +4,8 @@ import com.unrealdinnerbone.javd.JAVD;
 import com.unrealdinnerbone.javd.JAVDRegistry;
 import net.minecraft.Util;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.Main;
@@ -27,6 +29,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraftforge.common.data.DatapackBuiltinEntriesProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -42,12 +45,19 @@ import java.util.function.Consumer;
 
 public class DataEvent {
 
+    private static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
+            .add(Registries.DIMENSION_TYPE, JAMDBiomes::bootstrapDimTypes)
+            .add(Registries.BIOME, JAMDBiomes::bootstrapBiomes);
+
     public static void onData(GatherDataEvent event) {
         event.getGenerator().addProvider(true, new Recipe(event.getGenerator().getPackOutput()));
         event.getGenerator().addProvider(true, new BlockState(event.getGenerator(), event.getExistingFileHelper()));
         event.getGenerator().addProvider(true, new Item(event.getGenerator(), event.getExistingFileHelper()));
         event.getGenerator().addProvider(true, new LootTable(event.getGenerator().getPackOutput()));
         event.getGenerator().addProvider(true, new BlockTag(event.getGenerator().getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
+
+        event.getGenerator().addProvider(true, new DatapackBuiltinEntriesProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), BUILDER, Collections.singleton(JAVD.MOD_ID)));
+
     }
 
     private static <T extends DataProvider> DataProvider.Factory<T> bindRegistries(BiFunction<PackOutput, CompletableFuture<HolderLookup.Provider>, T> biFunction, CompletableFuture<HolderLookup.Provider> completableFuture) {
