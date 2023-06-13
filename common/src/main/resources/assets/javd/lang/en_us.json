@@ -1,8 +1,0 @@
-{
-  "javd.invalid.world": "Unable to find world '%s'",
-  "javd.invalid.pos": "Unable to find valid portal location",
-  "block.javd.portal_block" : "Void Portal",
-  "block.javd.void_portal_block" : "Void Portal",
-  "biome.javd.void" : "The Void",
-  "block.javd.void_portal_block.name" : "Void Portal"
-}

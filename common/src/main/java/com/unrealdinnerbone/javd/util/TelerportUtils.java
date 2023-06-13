@@ -3,11 +3,11 @@ package com.unrealdinnerbone.javd.util;
 import com.unrealdinnerbone.javd.JAVD;
 import com.unrealdinnerbone.javd.JAVDRegistry;
 import com.unrealdinnerbone.javd.block.PortalTileEntity;
+import com.unrealdinnerbone.trenzalore.api.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.portal.PortalInfo;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -44,7 +46,8 @@ public class TelerportUtils {
                             });
 
                         }
-                        TeleportHelper.teleport(playerEntity, toWorld, portalLocation.getX() + 0.5, portalLocation.getY() + 1, portalLocation.getZ() + 0.5);
+                        Vec3 portalLocationVec = new Vec3(portalLocation.getX() + 0.5, portalLocation.getY() + 1, portalLocation.getZ() + 0.5);
+                        Services.PLATFORM.teleport(playerEntity, toWorld, new PortalInfo(portalLocationVec, playerEntity.getDeltaMovement(), playerEntity.getYRot(), playerEntity.getXRot()));
                     },
                     () -> playerEntity.displayClientMessage(Component.translatable(JAVD.MOD_ID + ".invalid.pos"), true));
 
@@ -108,7 +111,7 @@ public class TelerportUtils {
 
 
     private static boolean isSafeSpawnLocation(Level world, BlockPos blockPos) {
-        return world.getBlockState(blockPos).isAir() && world.getBlockState(blockPos.above()).isAir();
+        return world.isInWorldBounds(blockPos) && world.getBlockState(blockPos).isAir() && world.getBlockState(blockPos.above()).isAir();
     }
 
 

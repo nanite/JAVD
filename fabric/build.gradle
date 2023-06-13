@@ -1,127 +1,81 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'maven-publish'
+    id 'idea'
+    id 'net.darkhax.curseforgegradle' version '1.0.14'
 }
 
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
+archivesBaseName = "${project.property("mod_name")}-${project.name}"
 
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
+Project commonProject = parent.project("Common")
 
-    runs {
-        // This adds a new gradle task that runs the datagen API: "gradlew runDatagenClient"
-        datagenClient {
+def mixinEnabled = project.property("mixinsEnabled") == "true"
+def mixinDebug = project.property("enableMixinDebug") == "true"
+def fabricDataGen = project.property("fabricDataGen") == "true"
 
-            inherit client
-            name "Data Generation"
-            vmArg "-Dfabric-api.datagen"
-            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
-
-            runDir "build/datagen"
-        }
-    }
-
-
-}
-
-sourceSets.main.resources { srcDir '../forge/src/generated/resources' }
-
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
+apply {
+    from file("../gradle/scripts/maven.gradle")
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modImplementation(("com.unrealdinnerbone:Trenzalore-Fabric:${trenzalore_version}+mc${minecraft_version}"))
+    implementation commonProject
+}
 
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+loom {
+    if(mixinEnabled) {
+        mixin {
+            defaultRefmapName = "${mod_id}.refmap.json"
+        }
+    }
+    runs {
+        client {
+            client()
+            setConfigName("Fabric Client")
+            ideConfigGenerated(true)
+            vmArg("-Dmixin.debug.export=${mixinDebug}")
+            runDir("run_client")
+        }
+        server {
+            server()
+            setConfigName("Fabric Server")
+            ideConfigGenerated(true)
+            vmArg("-Dmixin.debug.export=${mixinDebug}")
+            runDir("run_server")
+        }
+        data {
+            inherit client
+            setConfigName("Fabric Data")
+            ideConfigGenerated(fabricDataGen)
+
+            vmArg("-Dfabric-api.datagen")
+            vmArg("-Dfabric-api.datagen.output-dir=${commonProject.file("src/generated/resources")}")
+            vmArg("-Dfabric-api.datagen.modid=${mod_id}")
+
+            runDir "build/datagen"
+
+        }
+    }
 }
 
 processResources {
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
+    from commonProject.sourceSets.main.resources
 }
 
-shadowJar {
-    exclude "architectury.common.json"
-
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+tasks.withType(JavaCompile) {
+    source(commonProject.sourceSets.main.allSource)
 }
 
-remapJar {
-    injectAccessWidener = true
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
-    classifier null
-}
-
-jar {
-    classifier "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
-}
-
-def ENV = System.getenv()
-
-publishing {
-    publications {
-        mavenFabric(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
-        }
-    }
-
-    repositories {
-        if (ENV.NANITE_DEPLOY) {
-            maven {
-                url "https://maven.nanite.dev/releases"
-                credentials {
-                    username = "nanite"
-                    password = "${ENV.NANITE_DEPLOY}"
-                }
-            }
-        }
-    }
-}
-
-if (ENV.CURSE_DEPLOY) {
-    curseforge {
-        apiKey = ENV.CURSE_DEPLOY
-        project {
-            id = project.curseforge_id
-            releaseType = project.release_type
-            addGameVersion "Fabric"
-            addGameVersion "Java 17"
-            addGameVersion "${minecraft_version}"
-            relations {
-                requiredDependency 'fabric-api'
-                requiredDependency 'architectury-api'
-            }
-            mainArtifact(remapJar.archivePath)
-        }
-    }
+task curseforgePublish(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    apiToken = ENV.CURSE_TOKEN
+    def mainFile = upload(findProperty('curse_id'), remapJar)
+    mainFile.changelog = file("../CHANGELOG.md")
+    mainFile.releaseType = "beta"
+    mainFile.changelogType = "markdown"
+    mainFile.addRequirement("trenzalore")
+    mainFile.addJavaVersion("Java 17")
 }

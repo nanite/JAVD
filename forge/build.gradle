@@ -1,129 +1,111 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'java'
+    id 'eclipse'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '6.0.+'
+    id 'net.darkhax.curseforgegradle' version '1.0.14'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
 }
 
-architectury {
-    platformSetupLoomIde()
-    forge()
+archivesBaseName = "${project.property("mod_name")}-${project.name}"
+
+Project commonProject = parent.project("Common")
+
+def mixinEnabled = project.property("mixinsEnabled") == "true"
+def forgeDataGen = project.property("forgeDataGen") == "true"
+
+if(mixinEnabled) {
+    println("Mixins Enabled!")
+    mixin {
+        add commonProject.sourceSets.main, "${mod_id}.refmap.json"
+        config("${mod_id}.mixins.json")
+    }
 }
 
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
+minecraft {
+    mappings channel: 'official', version: minecraft_version
 
-    forge {
-        convertAccessWideners = true
-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-
-        mixinConfig "javd-common.mixins.json"
-        mixinConfig "javd.mixins.json"
-
-        dataGen {
-            mod "javd"
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${parent.name}.${project.name}.main"
+            taskName 'Client'
+            if(mixinEnabled) {
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            }
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source commonProject.sourceSets.main
+                }
+            }
         }
-    }
 
-
-    launches {
-        data {
-            arg "--existing", project(":common").file("src/main/resources").absolutePath
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${parent.name}.${project.name}.main"
+            taskName 'Server'
+            if(mixinEnabled) {
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            }
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source commonProject.sourceSets.main
+                }
+            }
         }
-    }
 
-}
-
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
-}
-
-dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
-
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
-}
-
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("META-INF/mods.toml") {
-        expand "version": project.version
-    }
-}
-
-shadowJar {
-    exclude "fabric.mod.json"
-    exclude "architectury.common.json"
-
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    archiveBaseName.set "${rootProject.archives_base_name}-${project.name}"
-    classifier null
-}
-
-jar {
-    classifier "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
-}
-
-def ENV = System.getenv()
-
-publishing {
-    publications {
-        mavenForge(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
-        }
-    }
-
-    repositories {
-        if (ENV.NANITE_DEPLOY) {
-            maven {
-                url "https://maven.nanite.dev/releases"
-                credentials {
-                    username = "nanite"
-                    password = "${ENV.NANITE_DEPLOY}"
+        if(forgeDataGen) {
+            data {
+                workingDirectory project.file('run')
+                ideaModule "${rootProject.name}.${project.name}.main"
+                args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+                taskName 'Data'
+                property 'mixin.env.remapRefMap', 'true'
+                property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+                mods {
+                    modDataRun {
+                        source sourceSets.main
+                        source commonProject.sourceSets.main
+                    }
                 }
             }
         }
     }
 }
 
-if (ENV.CURSE_DEPLOY) {
-    curseforge {
-        apiKey = ENV.CURSE_DEPLOY
-        project {
-            id = rootProject.curseforge_id
-            releaseType = project.release_type
-            addGameVersion "Java 17"
-            addGameVersion "Forge"
-
-            addGameVersion "${minecraft_version}"
-            relations {
-                requiredDependency 'architectury-api'
-            }
-            mainArtifact(remapJar)
-        }
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly commonProject
+    if(mixinEnabled) {
+        annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     }
+    implementation fg.deobf("com.unrealdinnerbone:Trenzalore-Forge:${trenzalore_version}+mc${minecraft_version}")
+
+
 }
+
+tasks.withType(JavaCompile) {
+    source(commonProject.sourceSets.main.allSource)
+}
+
+processResources {
+    from commonProject.sourceSets.main.resources
+}
+
+jar.finalizedBy('reobfJar')
+
+task curseforgePublish(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+
+    apiToken = ENV.CURSE_TOKEN
+    def mainFile = upload(findProperty('curse_id'), jar)
+    mainFile.changelog = file("../CHANGELOG.md")
+    mainFile.releaseType = "beta"
+    mainFile.changelogType = "markdown"
+    mainFile.addRequirement("trenzalore")
+    mainFile.addJavaVersion("Java 17")
+}
+
