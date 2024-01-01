@@ -1,0 +1,4 @@
+// 1.20.4	2023-12-31T22:58:20.1799874	Just Another Void Dimension/Tags for minecraft:block
+f8a9f463d508aea5a78c950850464f0f38648907 data\javd\tags\blocks\generator.json
+39ca10ba4aaafd3646130e23521b182525e2045f data\minecraft\tags\blocks\mineable\pickaxe.json
+39ca10ba4aaafd3646130e23521b182525e2045f data\minecraft\tags\blocks\needs_diamond_tool.json

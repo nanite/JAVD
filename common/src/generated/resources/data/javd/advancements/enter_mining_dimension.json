@@ -1,0 +1,27 @@
+{
+  "criteria": {
+    "enter_dimension": {
+      "conditions": {
+        "to": "javd:void"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancement.javd.enter_void_dimension.description"
+    },
+    "icon": {
+      "item": "javd:portal_block"
+    },
+    "title": {
+      "translate": "advancement.javd.enter_void_dimension"
+    }
+  },
+  "requirements": [
+    [
+      "enter_dimension"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
