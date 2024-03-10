@@ -21,7 +21,7 @@ public class PortalBlock extends Block implements EntityBlock {
 
 
     public PortalBlock() {
-        super(Properties.of().requiresCorrectToolForDrops().strength(5.0F, 6.0F).sound(SoundType.STONE).mapColor(MapColor.COLOR_BLUE));
+        super(Properties.of().strength(5.0F, 6.0F).sound(SoundType.STONE).mapColor(MapColor.COLOR_BLUE));
     }
 
 
