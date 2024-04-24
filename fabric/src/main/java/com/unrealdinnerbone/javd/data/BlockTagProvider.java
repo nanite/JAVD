@@ -37,7 +37,5 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(Blocks.YELLOW_CONCRETE);
         getOrCreateTagBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(JAVDRegistry.PORTAL_BLOCK.get());
-        getOrCreateTagBuilder(BlockTags.NEEDS_DIAMOND_TOOL)
-                .add(JAVDRegistry.PORTAL_BLOCK.get());
     }
 }

@@ -26,9 +26,9 @@ public class PortalBlock extends Block implements EntityBlock {
 
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hand) {
         if (!level.isClientSide()) {
-            boolean isInVoid = level.dimensionTypeId().equals(JAVDRegistry.Keys.DIMENSION_TYPE);
+            boolean isInVoid = level.dimensionTypeRegistration().is(JAVDRegistry.Keys.DIMENSION_TYPE);
             TelerportUtils.teleport(player, isInVoid ? Level.OVERWORLD : JAVDRegistry.Keys.LEVEL, pos, !isInVoid);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }else {

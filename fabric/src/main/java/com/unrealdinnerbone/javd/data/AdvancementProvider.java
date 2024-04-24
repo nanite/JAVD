@@ -8,23 +8,27 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.critereon.ChangeDimensionTrigger;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class AdvancementProvider extends FabricAdvancementProvider {
 
     public static final String ADVANCEMENT_ID = "advancement." + JAVD.MOD_ID + ".enter_void_dimension";
     public static final String ADVANCEMENT_DESCRIPTION_KEY = ADVANCEMENT_ID + ".description";
-    protected AdvancementProvider(FabricDataOutput output) {
-        super(output);
+
+    protected AdvancementProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(output, registryLookup);
     }
 
     @Override
-    public void generateAdvancement(Consumer<AdvancementHolder> consumer) {
+    public void generateAdvancement(HolderLookup.Provider lookup, Consumer<AdvancementHolder> consumer) {
         consumer.accept(Advancement.Builder.advancement()
-                        .display(
+                .parent(new ResourceLocation("minecraft", "story/mine_diamond"))
+                .display(
                                 JAVDRegistry.PORTAL_BLOCK_ITEM.get(),
                                 Component.translatable(ADVANCEMENT_ID),
                                 Component.translatable(ADVANCEMENT_DESCRIPTION_KEY),

@@ -1,12 +1,12 @@
 plugins {
-    id("dev.nanite.mlp") version("0.1.1")
+    id("dev.nanite.mlp") version("0.1.8")
     id("java-library")
     id("maven-publish")
     id("me.modmuss50.mod-publish-plugin") version "0.3.0"
 }
 
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 multiLoader.root() {
     minecraftVersion.set(project.property("minecraft_version"))
@@ -36,7 +36,7 @@ subprojects {
 
     sourceSets.main.resources.srcDir project.file('src/generated/resources')
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 
     base {
@@ -93,11 +93,11 @@ publishMods {
         modLoaders.add("fabric")
     }
 
-    def forgeOptions = publishOptions {
-        file = project.provider { project(":forge").tasks.jar }.flatMap { it.archiveFile }
-        displayName = "${project.name} Forge ${mod_version}+mc${minecraft_version}"
-        modLoaders.add("forge")
-    }
+//    def forgeOptions = publishOptions {
+//        file = project.provider { project(":forge").tasks.jar }.flatMap { it.archiveFile }
+//        displayName = "${project.name} Forge ${mod_version}+mc${minecraft_version}"
+//        modLoaders.add("forge")
+//    }
 
     def neoOptions = publishOptions {
         file = project.provider { project(":neo").tasks.jar }.flatMap { it.archiveFile }
@@ -122,9 +122,9 @@ publishMods {
         }
     }
 
-    curseforge("curseforgeForge") {
-        from(curseForgeOptions, forgeOptions)
-    }
+//    curseforge("curseforgeForge") {
+//        from(curseForgeOptions, forgeOptions)
+//    }
 
     curseforge("curseforgeNeoForge") {
         from(curseForgeOptions, neoOptions)

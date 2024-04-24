@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.Biome;
@@ -41,7 +41,7 @@ public class JAVDData implements DataGeneratorEntrypoint {
         registryBuilder.add(Registries.BIOME, this::bootstrapBiome);
     }
 
-    private void bootstrapBiome(BootstapContext<Biome> context) {
+    private void bootstrapBiome(BootstrapContext<Biome> context) {
         HolderGetter<PlacedFeature> placedFeatures = context.lookup(Registries.PLACED_FEATURE);
         HolderGetter<ConfiguredWorldCarver<?>> configuredWorldCarvers = context.lookup(Registries.CONFIGURED_CARVER);
         context.register(JAVDRegistry.Keys.BIOME, new Biome.BiomeBuilder()
@@ -60,7 +60,7 @@ public class JAVDData implements DataGeneratorEntrypoint {
                 .build());
     }
 
-    private void bootstrapDimensionType(BootstapContext<DimensionType> context) {
+    private void bootstrapDimensionType(BootstrapContext<DimensionType> context) {
         context.register(JAVDRegistry.Keys.DIMENSION_TYPE, new DimensionType(OptionalLong.of(6000),
                 true,
                 false,

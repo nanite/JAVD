@@ -1,3 +1,3 @@
-### 6.0.2
+### 7.0.0
 
 - Removed need for Diamond Tool
