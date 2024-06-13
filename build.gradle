@@ -1,5 +1,5 @@
 plugins {
-    id("dev.nanite.mlp") version("0.1.8")
+    id("dev.nanite.mlp") version("0.1.10")
     id("java-library")
     id("maven-publish")
     id("me.modmuss50.mod-publish-plugin") version "0.3.0"
@@ -44,8 +44,12 @@ subprojects {
     }
     repositories {
         maven {
-            name = "Creeperhost"
-            url = uri("https://maven.creeperhost.net/")
+            name = "NeoForge"
+            url = "https://maven.neoforged.net/"
+        }
+        maven {
+            name = "Fabric"
+            url = "https://maven.fabricmc.net/"
         }
         maven {
             name = "Nanite"
@@ -54,6 +58,10 @@ subprojects {
     }
     tasks.withType(ProcessResources).configureEach {
         outputs.upToDateWhen { false }
+    }
+
+    test {
+        enabled = false
     }
 
     publishing {
@@ -93,12 +101,6 @@ publishMods {
         modLoaders.add("fabric")
     }
 
-//    def forgeOptions = publishOptions {
-//        file = project.provider { project(":forge").tasks.jar }.flatMap { it.archiveFile }
-//        displayName = "${project.name} Forge ${mod_version}+mc${minecraft_version}"
-//        modLoaders.add("forge")
-//    }
-
     def neoOptions = publishOptions {
         file = project.provider { project(":neo").tasks.jar }.flatMap { it.archiveFile }
         displayName = "${project.name} Neo ${mod_version}+mc${minecraft_version}"
@@ -121,10 +123,6 @@ publishMods {
             slug = "fabric-api"
         }
     }
-
-//    curseforge("curseforgeForge") {
-//        from(curseForgeOptions, forgeOptions)
-//    }
 
     curseforge("curseforgeNeoForge") {
         from(curseForgeOptions, neoOptions)

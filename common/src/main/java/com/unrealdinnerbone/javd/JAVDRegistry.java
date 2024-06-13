@@ -6,6 +6,7 @@ import com.unrealdinnerbone.trenzalore.api.platform.services.IRegistry;
 import com.unrealdinnerbone.trenzalore.api.registry.Regeneration;
 import com.unrealdinnerbone.trenzalore.api.registry.RegistryEntry;
 import com.unrealdinnerbone.trenzalore.api.registry.RegistryObjects;
+import com.unrealdinnerbone.trenzalore.lib.RLUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -35,20 +36,20 @@ public class JAVDRegistry implements IRegistry {
 
     public static final RegistryEntry<BlockEntityType<?>> PORTAL = TILES.register("portal", () -> Regeneration.createBlockEntityType(PortalTileEntity::new, PORTAL_BLOCK.get()));
 
-    public static final TagKey<Block> GENERATOR_BLOCKS = TagKey.create(Registries.BLOCK, new ResourceLocation(JAVD.MOD_ID, "generator"));
+    public static final TagKey<Block> GENERATOR_BLOCKS = TagKey.create(Registries.BLOCK, JAVD.rl( "generator"));
 
 
     public static class Keys {
-        public static final ResourceKey<DimensionType> DIMENSION_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, new ResourceLocation(JAVD.MOD_ID, "void"));
-        public static final ResourceKey<Biome> BIOME = ResourceKey.create(Registries.BIOME, new ResourceLocation(JAVD.MOD_ID, "void"));
+        public static final ResourceKey<DimensionType> DIMENSION_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, JAVD.rl("void"));
+        public static final ResourceKey<Biome> BIOME = ResourceKey.create(Registries.BIOME, JAVD.rl( "void"));
 
-        public static final ResourceKey<Level> LEVEL = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(JAVD.MOD_ID, "void"));
+        public static final ResourceKey<Level> LEVEL = ResourceKey.create(Registries.DIMENSION, JAVD.rl("void"));
     }
 
     @Override
     public void afterRegistered() {
         BuiltInRegistries.CREATIVE_MODE_TAB.registryKeySet().stream()
-                .filter(tabResourceKey -> tabResourceKey.location().equals(new ResourceLocation("tools_and_utilities")))
+                .filter(tabResourceKey -> tabResourceKey.location().equals(RLUtils.rlFull("minecraft:tools_and_utilities")))
                 .findFirst()
                 .ifPresent(tabResourceKey -> Regeneration.addItemsToCreateTab(tabResourceKey, List.of(PORTAL_BLOCK_ITEM)));
     }

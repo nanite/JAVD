@@ -1,5 +1,6 @@
 package com.unrealdinnerbone.javd.data;
 
+import com.unrealdinnerbone.javd.JAVD;
 import com.unrealdinnerbone.javd.JAVDRegistry;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
@@ -29,6 +30,6 @@ public class RecipeProvider extends FabricRecipeProvider {
                 .define('O', Blocks.OBSIDIAN)
                 .define('E', Items.ENDER_PEARL)
                 .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
-                .save(exporter, new ResourceLocation("javd", "portal_block"));
+                .save(exporter, JAVD.rl("portal_block"));
     }
 }

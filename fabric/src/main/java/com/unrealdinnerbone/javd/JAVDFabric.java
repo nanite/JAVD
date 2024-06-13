@@ -5,6 +5,6 @@ import net.fabricmc.api.ModInitializer;
 public class JAVDFabric implements ModInitializer {
     @Override
     public void onInitialize() {
-        JAVD.init();
+
     }
 }

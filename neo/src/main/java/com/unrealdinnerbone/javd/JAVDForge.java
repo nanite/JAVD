@@ -6,6 +6,5 @@ import net.neoforged.fml.common.Mod;
 public class JAVDForge {
     
     public JAVDForge() {
-        JAVD.init();
     }
 }

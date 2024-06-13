@@ -1,3 +1,3 @@
-### 7.0.0
+### 8.0.0
 
-- Removed need for Diamond Tool
+- Update to 1.21
