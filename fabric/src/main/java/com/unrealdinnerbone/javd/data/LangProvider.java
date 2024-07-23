@@ -19,6 +19,7 @@ public class LangProvider extends FabricLanguageProvider {
         translationBuilder.add("javd.invalid.world", "Unable to find world '%s'");
         translationBuilder.add("javd.invalid.pos", "Unable to find valid portal location");
         translationBuilder.add("biome.javd.void", "The Void");
+        translationBuilder.add("dimension.javd.void", "The Void");
         translationBuilder.add(AdvancementProvider.ADVANCEMENT_ID, "To Infinity and Nothing");
         translationBuilder.add(AdvancementProvider.ADVANCEMENT_DESCRIPTION_KEY, "Enter the Void Dimension");
     }
