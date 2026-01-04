@@ -9,13 +9,14 @@ import java.util.concurrent.CompletableFuture;
 
 public class LangProvider extends FabricLanguageProvider {
 
-    protected LangProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
+    public LangProvider(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(dataOutput, registryLookup);
     }
 
     @Override
     public void generateTranslations(HolderLookup.Provider provider, TranslationBuilder translationBuilder) {
-        translationBuilder.add(JAVDRegistry.PORTAL_BLOCK.get(), "Void Portal");
+        translationBuilder.add(JAVDRegistry.PORTAL_BLOCK.value(), "Void Portal");
+        translationBuilder.add(JAVDRegistry.PORTAL_BLOCK_ITEM.value(), "Void Portal");
         translationBuilder.add("javd.invalid.world", "Unable to find world '%s'");
         translationBuilder.add("javd.invalid.pos", "Unable to find valid portal location");
         translationBuilder.add("biome.javd.void", "The Void");

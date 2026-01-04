@@ -1,14 +1,28 @@
-package com.unrealdinnerbone.javd.data;
+package com.unrealdinnerbone.javd.client.data;
 
 import com.unrealdinnerbone.javd.JAVDRegistry;
+import com.unrealdinnerbone.javd.data.AdvancementProvider;
+import com.unrealdinnerbone.javd.data.BlockTagProvider;
+import com.unrealdinnerbone.javd.data.DRP;
+import com.unrealdinnerbone.javd.data.LangProvider;
+import com.unrealdinnerbone.javd.data.LootTableProvider;
+import com.unrealdinnerbone.javd.data.RecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.data.worldgen.biome.OverworldBiomes;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TimelineTags;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.attribute.AmbientSounds;
+import net.minecraft.world.attribute.BackgroundMusic;
+import net.minecraft.world.attribute.BedRule;
+import net.minecraft.world.attribute.EnvironmentAttributeMap;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -17,6 +31,7 @@ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.timeline.Timeline;
 
 import java.util.OptionalLong;
 
@@ -49,34 +64,46 @@ public class JAVDData implements DataGeneratorEntrypoint {
                 .downfall(0.4f)
                 .hasPrecipitation(false)
                 .temperatureAdjustment(Biome.TemperatureModifier.NONE)
+                .setAttribute(EnvironmentAttributes.SKY_COLOR, 8103167)
+                .setAttribute(EnvironmentAttributes.FOG_COLOR, 12638463)
+                .setAttribute(EnvironmentAttributes.WATER_FOG_COLOR, 270131)
                 .specialEffects(new BiomeSpecialEffects.Builder()
-                        .skyColor(8103167)
-                        .fogColor(12638463)
                         .waterColor(4445678)
-                        .waterFogColor(270131)
                         .build())
                 .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                 .generationSettings(new BiomeGenerationSettings.Builder(placedFeatures, configuredWorldCarvers).build())
                 .build());
     }
 
+
+
     private void bootstrapDimensionType(BootstrapContext<DimensionType> context) {
-        context.register(JAVDRegistry.Keys.DIMENSION_TYPE, new DimensionType(OptionalLong.of(6000),
+        HolderGetter<Timeline> holdergetter = context.lookup(Registries.TIMELINE);
+        EnvironmentAttributeMap environmentattributemap = EnvironmentAttributeMap.builder()
+//                .set(EnvironmentAttributes.FOG_COLOR, -4138753)
+//                .set(EnvironmentAttributes.CLOUD_COLOR, ARGB.white(0.8F))
+//                .set(EnvironmentAttributes.CLOUD_HEIGHT, 192.33F)
+//                .set(EnvironmentAttributes.BACKGROUND_MUSIC, BackgroundMusic.OVERWORLD)
+//                .set(EnvironmentAttributes.BED_RULE, BedRule.CAN_SLEEP_WHEN_DARK)
+//                .set(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, false)
+//                .set(EnvironmentAttributes.NETHER_PORTAL_SPAWNS_PIGLINS, true)
+//                .set(EnvironmentAttributes.AMBIENT_SOUNDS, AmbientSounds.LEGACY_CAVE_SETTINGS)
+                .build();
+        context.register(JAVDRegistry.Keys.DIMENSION_TYPE, new DimensionType(
                 true,
                 false,
                 false,
-                true,
-                1.0D,
-                true,
-                false,
+                1.0f,
                 -64,
                 384,
                 384,
                 BlockTags.INFINIBURN_OVERWORLD,
-                BuiltinDimensionTypes.OVERWORLD_EFFECTS,
-                1.0F,
-                new DimensionType.MonsterSettings(false,
-                        false,
-                        UniformInt.of(0, 7), 0)));
+                        0.25F,
+                new DimensionType.MonsterSettings(UniformInt.of(0, 7), 0),
+                DimensionType.Skybox.OVERWORLD,
+                DimensionType.CardinalLightType.DEFAULT,
+                environmentattributemap,
+                holdergetter.getOrThrow(TimelineTags.UNIVERSAL))
+                );
     }
 }

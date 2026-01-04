@@ -5,10 +5,10 @@ import com.unrealdinnerbone.javd.JAVDRegistry;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
@@ -22,14 +22,24 @@ public class RecipeProvider extends FabricRecipeProvider {
     }
 
     @Override
-    public void buildRecipes(RecipeOutput exporter) {
-        ShapedRecipeBuilder.shaped(RecipeCategory.TRANSPORTATION, JAVDRegistry.PORTAL_BLOCK_ITEM.get())
-                .pattern("OOO")
-                .pattern("OEO")
-                .pattern("OOO")
-                .define('O', Blocks.OBSIDIAN)
-                .define('E', Items.ENDER_PEARL)
-                .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
-                .save(exporter, JAVD.rl("portal_block"));
+    protected net.minecraft.data.recipes.RecipeProvider createRecipeProvider(HolderLookup.Provider registryLookup, RecipeOutput exporter) {
+        return new net.minecraft.data.recipes.RecipeProvider(registryLookup, exporter) {
+            @Override
+            public void buildRecipes() {
+                shaped(RecipeCategory.TRANSPORTATION, JAVDRegistry.PORTAL_BLOCK_ITEM.getHolder().value())
+                        .pattern("OOO")
+                        .pattern("OEO")
+                        .pattern("OOO")
+                        .define('O', Blocks.OBSIDIAN)
+                        .define('E', Items.ENDER_PEARL)
+                        .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
+                        .save(output, ResourceKey.create(Registries.RECIPE, JAVD.rl("portal_block")));
+            }
+        };
+    }
+
+    @Override
+    public String getName() {
+        return "";
     }
 }

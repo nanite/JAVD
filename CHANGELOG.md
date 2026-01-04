@@ -1,3 +1,3 @@
-### 8.0.1
+### 21.11.0
 
-- Update Lang
+- Update to Minecraft 1.21.11

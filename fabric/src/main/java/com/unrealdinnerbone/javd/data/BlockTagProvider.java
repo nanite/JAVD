@@ -18,7 +18,7 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider arg) {
-        getOrCreateTagBuilder(JAVDRegistry.GENERATOR_BLOCKS)
+        valueLookupBuilder(JAVDRegistry.GENERATOR_BLOCKS)
                 .add(Blocks.BLACK_CONCRETE)
                 .add(Blocks.BLUE_CONCRETE)
                 .add(Blocks.BROWN_CONCRETE)
@@ -35,7 +35,7 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(Blocks.RED_CONCRETE)
                 .add(Blocks.WHITE_CONCRETE)
                 .add(Blocks.YELLOW_CONCRETE);
-        getOrCreateTagBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
+        valueLookupBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(JAVDRegistry.PORTAL_BLOCK.get());
     }
 }

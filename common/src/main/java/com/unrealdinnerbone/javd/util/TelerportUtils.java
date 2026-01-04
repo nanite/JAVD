@@ -3,7 +3,6 @@ package com.unrealdinnerbone.javd.util;
 import com.unrealdinnerbone.javd.JAVD;
 import com.unrealdinnerbone.javd.JAVDRegistry;
 import com.unrealdinnerbone.javd.block.PortalTileEntity;
-import com.unrealdinnerbone.trenzalore.api.platform.Services;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,49 +13,51 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 public class TelerportUtils {
 
 
     public static void teleport(Player playerEntity, ResourceKey<Level> toWorldKey, BlockPos blockPos, boolean spawnPlatform) {
-        ServerLevel toWorld = playerEntity.getServer().getLevel(toWorldKey);
+        ServerLevel toWorld = playerEntity.level().getServer().getLevel(toWorldKey);
         if (toWorld != null) {
             findPortalLocation(toWorld, blockPos).ifPresentOrElse(portalLocation -> {
                         if (toWorld.getBlockState(portalLocation).isAir()) {
-                            toWorld.setBlockAndUpdate(portalLocation, JAVDRegistry.PORTAL_BLOCK.get().defaultBlockState());
-                            Block block = BuiltInRegistries.BLOCK.getTag(JAVDRegistry.GENERATOR_BLOCKS)
-                                    .map(named -> named.getRandomElement(toWorld.getRandom()))
-                                    .filter(Optional::isPresent)
-                                    .map(Optional::get)
-                                    .map(Holder::value)
-                                    .orElse(Blocks.STONE);
+                            toWorld.setBlockAndUpdate(portalLocation, JAVDRegistry.PORTAL_BLOCK.getHolder().value().defaultBlockState());
+
+
+                            Iterable<Holder<Block>> tagOrEmpty = BuiltInRegistries.BLOCK.getTagOrEmpty(JAVDRegistry.GENERATOR_BLOCKS);
+                            List<Iterator<Holder<Block>>> list = List.of(tagOrEmpty.iterator());
+                            List<Holder<Block>> holders = makeCollection(tagOrEmpty);
+                            Collections.shuffle(holders);
+                            Holder<Block> randomBlock = holders.getFirst();
                             int range = 3;
                             BlockPos.betweenClosedStream(portalLocation.offset(range, 0, range), portalLocation.offset(-range, 0, -range)).forEach(blockPos1 -> {
                                 if (toWorld.getBlockState(blockPos1).isAir()) {
-                                    toWorld.setBlockAndUpdate(blockPos1, block.defaultBlockState());
+                                    toWorld.setBlockAndUpdate(blockPos1, randomBlock.value().defaultBlockState());
                                 }
                             });
 
                         }
-                        playerEntity.teleportTo(toWorld, portalLocation.getX() + 0.5, portalLocation.getY() + 1, portalLocation.getZ() + 0.5, Collections.emptySet(), playerEntity.getYRot(), playerEntity.getXRot());
+                        playerEntity.teleportTo(toWorld, portalLocation.getX() + 0.5, portalLocation.getY() + 1, portalLocation.getZ() + 0.5, Collections.emptySet(), playerEntity.getYRot(), playerEntity.getXRot(), true);
                     },
                     () -> playerEntity.displayClientMessage(Component.translatable(JAVD.MOD_ID + ".invalid.pos"), true));
 
         } else {
-            playerEntity.displayClientMessage(Component.translatable(JAVD.MOD_ID + ".invalid.world", toWorldKey.location().toString()), true);
+            playerEntity.displayClientMessage(Component.translatable(JAVD.MOD_ID + ".invalid.world", toWorldKey.identifier().toString()), true);
         }
     }
 
 
     private static Optional<BlockPos> findPortalLocation(Level worldTo, BlockPos fromPos) {
-        if (worldTo.getBlockState(fromPos).getBlock() == JAVDRegistry.PORTAL_BLOCK.get() && isSafeSpawnLocation(worldTo, fromPos)) {
+        if (worldTo.getBlockState(fromPos).is(JAVDRegistry.PORTAL_BLOCK) && isSafeSpawnLocation(worldTo, fromPos)) {
             return Optional.of(fromPos.above());
         }
 
@@ -68,8 +69,8 @@ public class TelerportUtils {
                 .findFirst()
                 .orElseGet(() -> {
                     BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(0, 0, 0);
-                    int minY = worldTo.getMinBuildHeight();
-                    int maxY = worldTo.getMaxBuildHeight();
+                    int minY = worldTo.getMinY();
+                    int maxY = worldTo.getMaxY();
                     int start = (minY + maxY);
                     if (start != 0) {
                         start = start / 2;
@@ -110,6 +111,14 @@ public class TelerportUtils {
 
     private static boolean isSafeSpawnLocation(Level world, BlockPos blockPos) {
         return world.isInWorldBounds(blockPos) && world.getBlockState(blockPos).isAir() && world.getBlockState(blockPos.above()).isAir();
+    }
+
+    public static <E> List<E> makeCollection(Iterable<E> iter) {
+        List<E> list = new ArrayList<>();
+        for (E item : iter) {
+            list.add(item);
+        }
+        return list;
     }
 
 

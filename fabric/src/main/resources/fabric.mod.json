@@ -22,7 +22,7 @@
       "com.unrealdinnerbone.javd.JAVDFabric"
     ],
     "fabric-datagen": [
-      "com.unrealdinnerbone.javd.data.JAVDData"
+      "com.unrealdinnerbone.javd.client.data.JAVDData"
     ]
   },
   "depends": {

@@ -1,17 +1,14 @@
 package com.unrealdinnerbone.javd;
 
-import com.unrealdinnerbone.trenzalore.lib.RLUtils;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
+import com.unrealdinnerbone.trenzalore.lib.IDUtils;
+import net.minecraft.resources.Identifier;
 
 public class JAVD {
     public static final String MOD_ID = "javd";
 
 
-    public static ResourceLocation rl(String value) {
-        return RLUtils.rl(MOD_ID, value);
+    public static Identifier rl(String value) {
+        return IDUtils.id(MOD_ID, value);
     }
 
 }
