@@ -23,6 +23,9 @@ import net.minecraft.world.attribute.BackgroundMusic;
 import net.minecraft.world.attribute.BedRule;
 import net.minecraft.world.attribute.EnvironmentAttributeMap;
 import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.clock.WorldClock;
+import net.minecraft.world.clock.WorldClocks;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -33,6 +36,7 @@ import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.timeline.Timeline;
 
+import java.util.Optional;
 import java.util.OptionalLong;
 
 public class JAVDData implements DataGeneratorEntrypoint {
@@ -47,7 +51,6 @@ public class JAVDData implements DataGeneratorEntrypoint {
         pack.addProvider(RecipeProvider::new);
         pack.addProvider(LootTableProvider::new);
         pack.addProvider(AdvancementProvider::new);
-
     }
 
     @Override
@@ -79,6 +82,7 @@ public class JAVDData implements DataGeneratorEntrypoint {
 
     private void bootstrapDimensionType(BootstrapContext<DimensionType> context) {
         HolderGetter<Timeline> holdergetter = context.lookup(Registries.TIMELINE);
+        HolderGetter<WorldClock> clocks = context.lookup(Registries.WORLD_CLOCK);
         EnvironmentAttributeMap environmentattributemap = EnvironmentAttributeMap.builder()
 //                .set(EnvironmentAttributes.FOG_COLOR, -4138753)
 //                .set(EnvironmentAttributes.CLOUD_COLOR, ARGB.white(0.8F))
@@ -91,6 +95,7 @@ public class JAVDData implements DataGeneratorEntrypoint {
                 .build();
         context.register(JAVDRegistry.Keys.DIMENSION_TYPE, new DimensionType(
                 true,
+                true,
                 false,
                 false,
                 1.0f,
@@ -98,12 +103,13 @@ public class JAVDData implements DataGeneratorEntrypoint {
                 384,
                 384,
                 BlockTags.INFINIBURN_OVERWORLD,
-                        0.25F,
+                0.25F,
                 new DimensionType.MonsterSettings(UniformInt.of(0, 7), 0),
                 DimensionType.Skybox.OVERWORLD,
-                DimensionType.CardinalLightType.DEFAULT,
+                CardinalLighting.Type.DEFAULT,
                 environmentattributemap,
-                holdergetter.getOrThrow(TimelineTags.UNIVERSAL))
-                );
+                holdergetter.getOrThrow(TimelineTags.UNIVERSAL),
+                Optional.of(clocks.getOrThrow(WorldClocks.OVERWORLD)))
+        );
     }
 }

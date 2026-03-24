@@ -3,7 +3,7 @@ package com.unrealdinnerbone.javd.data;
 import com.unrealdinnerbone.javd.JAVD;
 import com.unrealdinnerbone.javd.JAVDRegistry;
 import com.unrealdinnerbone.trenzalore.lib.IDUtils;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -20,7 +20,7 @@ public class AdvancementProvider extends FabricAdvancementProvider {
     public static final String ADVANCEMENT_ID = "advancement." + JAVD.MOD_ID + ".enter_void_dimension";
     public static final String ADVANCEMENT_DESCRIPTION_KEY = ADVANCEMENT_ID + ".description";
 
-    public AdvancementProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+    public AdvancementProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(output, registryLookup);
     }
 

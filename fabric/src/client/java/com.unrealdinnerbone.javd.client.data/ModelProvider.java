@@ -2,13 +2,13 @@ package com.unrealdinnerbone.javd.client.data;
 
 import com.unrealdinnerbone.javd.JAVDRegistry;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 
 public class ModelProvider extends FabricModelProvider {
 
-    public ModelProvider(FabricDataOutput output) {
+    public ModelProvider(FabricPackOutput output) {
         super(output);
     }
 

@@ -2,7 +2,7 @@ package com.unrealdinnerbone.javd.data;
 
 import com.unrealdinnerbone.javd.JAVD;
 import com.unrealdinnerbone.javd.JAVDRegistry;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -13,11 +13,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class RecipeProvider extends FabricRecipeProvider {
 
-    public RecipeProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+    public RecipeProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
         super(output, registryLookup);
     }
 

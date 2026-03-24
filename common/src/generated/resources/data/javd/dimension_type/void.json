@@ -1,9 +1,11 @@
 {
   "ambient_light": 0.25,
   "coordinate_scale": 1.0,
+  "default_clock": "minecraft:overworld",
   "has_ceiling": false,
+  "has_ender_dragon_fight": false,
   "has_fixed_time": true,
-  "has_skylight": false,
+  "has_skylight": true,
   "height": 384,
   "infiniburn": "#minecraft:infiniburn_overworld",
   "logical_height": 384,

@@ -26,10 +26,9 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.14",
+    "fabric-api": "*",
     "minecraft": "${minecraft_version}",
-    "java": ">=17",
-    "trenzalore": ">=${trenzalore_version}"
+    "java": ">=25"
   }
 }
   

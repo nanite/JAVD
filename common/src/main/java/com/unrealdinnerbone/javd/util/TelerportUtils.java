@@ -48,10 +48,10 @@ public class TelerportUtils {
                         }
                         playerEntity.teleportTo(toWorld, portalLocation.getX() + 0.5, portalLocation.getY() + 1, portalLocation.getZ() + 0.5, Collections.emptySet(), playerEntity.getYRot(), playerEntity.getXRot(), true);
                     },
-                    () -> playerEntity.displayClientMessage(Component.translatable(JAVD.MOD_ID + ".invalid.pos"), true));
+                    () -> playerEntity.sendOverlayMessage(Component.translatable(JAVD.MOD_ID + ".invalid.pos")));
 
         } else {
-            playerEntity.displayClientMessage(Component.translatable(JAVD.MOD_ID + ".invalid.world", toWorldKey.identifier().toString()), true);
+            playerEntity.sendOverlayMessage(Component.translatable(JAVD.MOD_ID + ".invalid.world", toWorldKey.identifier().toString()));
         }
     }
 
@@ -63,7 +63,7 @@ public class TelerportUtils {
 
         int range = 5;
         return Optional.ofNullable(ChunkPos.rangeClosed(worldTo.getChunkAt(fromPos).getPos(), range)
-                .map(chunkPos -> worldTo.getChunk(chunkPos.x, chunkPos.z).getBlockEntitiesPos())
+                .map(chunkPos -> worldTo.getChunk(chunkPos.x(), chunkPos.z()).getBlockEntitiesPos())
                 .flatMap(Collection::stream).toList().stream()
                 .filter(pos -> worldTo.getBlockEntity(pos) instanceof PortalTileEntity)
                 .findFirst()
