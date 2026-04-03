@@ -1,3 +1,3 @@
-### 21.11.0
+### 26.1.1.0
 
-- Update to Minecraft 1.21.11
+- Update to 26.1.1

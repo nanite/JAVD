@@ -10,18 +10,6 @@ credits=""
 authors="UnRealDinnerbone"
 description="Adds a void dimension to the game."
 [[dependencies.javd]]
-modId = "neoforge"
-required = true
-versionRange = "[1.0,)"
-ordering = "NONE"
-side = "BOTH"
-[[dependencies.javd]]
-modId = "minecraft"
-required = true
-versionRange = "[${minecraft_version}]"
-ordering = "NONE"
-side = "BOTH"
-[[dependencies.javd]]
 modId = "trenzalore"
 required = true
 versionRange = "[${trenzalore_version},)"
